@@ -1,4 +1,4 @@
-# Claude Logo Switch
+# CC Logo Switch
 
 [中文说明](README.zh-CN.md) · [How it works](docs/how-it-works.md)
 
@@ -34,23 +34,23 @@ Keep the checkout outside `Documents` if macOS prevents your terminal from acces
 ```bash
 mkdir -p ~/.local/share
 cd ~/.local/share
-git clone https://github.com/ArthurYangX/claude-logo-switch.git
-cd claude-logo-switch
+git clone https://github.com/ArthurYangX/cc-logo-switch.git
+cd cc-logo-switch
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
 ```
 
-The earlier `png-to-claude` command remains available as an alias. The installation-record location remains unchanged so existing backups can still be restored.
+The earlier `claude-logo-switch` and `png-to-claude` commands remain available as aliases. The installation-record location remains unchanged so existing backups can still be restored.
 
 Node.js must also be available as `node` when building or installing a header patch.
 
 ## Preview your image
 
 ```bash
-claude-logo-switch preview ~/Downloads/avatar.png
-claude-logo-switch preview ~/Downloads/avatar.png --width 24
-claude-logo-switch preview ~/Downloads/avatar.png --svg /tmp/avatar-preview.svg
+cc-logo-switch preview ~/Downloads/avatar.png
+cc-logo-switch preview ~/Downloads/avatar.png --width 24
+cc-logo-switch preview ~/Downloads/avatar.png --svg /tmp/avatar-preview.svg
 ```
 
 Transparent pixels reveal the terminal background. The converter uses nearest-neighbor resizing, a maximum of 15 opaque colors, and an alpha threshold of 128. Each terminal row contains two rows of pixels. The default width is 28 columns; even widths from 12 to 32 are accepted. Very tall or complex images can exceed the fixed patch budget and are rejected.
@@ -58,10 +58,10 @@ Transparent pixels reveal the terminal background. The converter uses nearest-ne
 ## Build a separate executable first
 
 ```bash
-claude-logo-switch build ~/Downloads/avatar.png \
-  --output ~/.local/share/claude-logo-switch/claude-preview
+cc-logo-switch build ~/Downloads/avatar.png \
+  --output ~/.local/share/cc-logo-switch/claude-preview
 
-~/.local/share/claude-logo-switch/claude-preview
+~/.local/share/cc-logo-switch/claude-preview
 ```
 
 This leaves your installed Claude untouched. The output filename must not already exist. The tool validates the JavaScript, signs the new executable, verifies its signature, and checks `--version`. You can then inspect the welcome header interactively.
@@ -71,7 +71,7 @@ The default source is `~/.local/bin/claude`; use `--target /path/to/claude` for 
 ## Install the header
 
 ```bash
-claude-logo-switch install ~/Downloads/avatar.png
+cc-logo-switch install ~/Downloads/avatar.png
 ```
 
 This builds and validates a candidate, saves a checksummed backup next to your current executable, and replaces the executable atomically. Existing customizations outside the header are preserved. The installation record is stored at:
@@ -87,7 +87,7 @@ Already using a header patch? Restore it with the tool that installed it before 
 ## Restore
 
 ```bash
-claude-logo-switch restore
+cc-logo-switch restore
 ```
 
 Restoration verifies both the installed file and the backup. If Claude has since been updated or modified, restoration refuses to overwrite it. `--state /path/to/installation.json` selects a separate installation record for both `install` and `restore`.
