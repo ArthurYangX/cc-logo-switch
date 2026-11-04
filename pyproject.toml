@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "png-to-claude-code"
+name = "claude-logo-switch"
 version = "0.1.0"
 description = "Turn a PNG into a native pixel-art welcome icon for Claude Code."
 readme = "README.md"
@@ -14,10 +14,11 @@ authors = [{name = "ArthurYangX"}]
 dependencies = ["Pillow>=10,<14"]
 
 [project.scripts]
+claude-logo-switch = "png_to_claude_code.cli:main"
 png-to-claude = "png_to_claude_code.cli:main"
 
 [project.urls]
-Repository = "https://github.com/ArthurYangX/png-to-claude-code"
+Repository = "https://github.com/ArthurYangX/claude-logo-switch"
 
 [tool.setuptools.packages.find]
 where = ["src"]

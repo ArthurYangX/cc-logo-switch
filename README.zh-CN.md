@@ -1,4 +1,4 @@
-# PNG to Claude Code
+# Claude Logo Switch
 
 [English](README.md) · [实现说明](docs/how-it-works.md)
 
@@ -28,12 +28,14 @@
 ```bash
 mkdir -p ~/.local/share
 cd ~/.local/share
-git clone https://github.com/ArthurYangX/png-to-claude-code.git
-cd png-to-claude-code
+git clone https://github.com/ArthurYangX/claude-logo-switch.git
+cd claude-logo-switch
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
 ```
+
+旧命令 `png-to-claude` 仍可使用；安装记录位置保持兼容，已有备份仍能恢复。
 
 构建和安装时，系统需要能运行 `node`。
 
@@ -42,7 +44,7 @@ python -m pip install .
 先预览：
 
 ```bash
-png-to-claude preview ~/Downloads/avatar.png
+claude-logo-switch preview ~/Downloads/avatar.png
 ```
 
 可选 `--width 24` 调整宽度，或 `--svg /tmp/preview.svg` 保存透明矢量预览。默认 28 列，支持 12–32 之间的偶数宽度。每个字符装下上下两个像素，最多 15 个不透明颜色，透明度以 128 为阈值。
@@ -50,15 +52,15 @@ png-to-claude preview ~/Downloads/avatar.png
 建议先构建独立副本试用，不改当前安装：
 
 ```bash
-png-to-claude build ~/Downloads/avatar.png \
-  --output ~/.local/share/png-to-claude-code/claude-preview
-~/.local/share/png-to-claude-code/claude-preview
+claude-logo-switch build ~/Downloads/avatar.png \
+  --output ~/.local/share/claude-logo-switch/claude-preview
+~/.local/share/claude-logo-switch/claude-preview
 ```
 
 确认效果后安装：
 
 ```bash
-png-to-claude install ~/Downloads/avatar.png
+claude-logo-switch install ~/Downloads/avatar.png
 ```
 
 工具会生成候选文件，检查语法、签名和版本，备份当前版本，然后替换安装文件。新开一个 Claude 会话生效；现有会话不会被关闭。默认目标是 `~/.local/bin/claude`，也可用 `--target` 指定其他原生安装。
@@ -68,7 +70,7 @@ png-to-claude install ~/Downloads/avatar.png
 恢复安装前的版本：
 
 ```bash
-png-to-claude restore
+claude-logo-switch restore
 ```
 
 安装记录默认在 `~/.config/png-to-claude-code/installation.json`。安装和恢复均支持 `--state` 指定记录位置。如果 Claude 已升级或被其他工具修改，恢复命令会拒绝覆盖新文件。
