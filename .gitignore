@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.DS_Store
+.env
+.env.*
+*.log
+*.bak*
+installation.json
+claude-patched*
+*.before-png-to-claude-*

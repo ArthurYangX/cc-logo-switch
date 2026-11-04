@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "png-to-claude-code"
+version = "0.1.0"
+description = "Turn a PNG into a native pixel-art welcome icon for Claude Code."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "ArthurYangX"}]
+dependencies = ["Pillow>=10,<14"]
+
+[project.scripts]
+png-to-claude = "png_to_claude_code.cli:main"
+
+[project.urls]
+Repository = "https://github.com/ArthurYangX/png-to-claude-code"
+
+[tool.setuptools.packages.find]
+where = ["src"]
