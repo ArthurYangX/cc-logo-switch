@@ -6,11 +6,13 @@
 
 实现方式是将图片转换成彩色 `▀` / `▄` 字符，再替换欢迎页组件。它不依赖 Kitty 图片协议，也不会在启动前额外打印一张大图。
 
-| 输入 PNG | 转换后的像素预览：28 列 × 11 行 |
+| 输入 PNG | VS Code 中的 Claude 实际启动图标 |
 | --- | --- |
-| <img src="examples/deepseek.png" width="260" alt="输入图"> | <img src="docs/assets/pixel-preview.svg" width="280" alt="像素预览"> |
+| <img src="examples/deepseek.png" width="260" alt="输入图"> | <img src="docs/assets/claude-startup-icon.png" width="280" alt="从 VS Code 的 Claude 实际启动页截取的图标"> |
 
-上图展示转换后的像素，不是终端截图。示例是 AI 生成的 DeepSeek 风格角色，也可以换成你自己的图片。
+右图直接截自 VS Code 中的 Claude Code 启动页，保留实际终端配色、背景和比例。示例是 AI 生成的 DeepSeek 风格角色，也可以换成你自己的图片。
+
+[原始 RGB 像素网格](docs/assets/pixel-preview.svg)仅用于检查转换数据，不代表安装后的截图。终端的颜色映射、字体尺寸和背景都会影响最终观感。
 
 ## 当前支持范围
 

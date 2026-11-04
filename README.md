@@ -6,11 +6,13 @@ Turn your PNG into a **color pixel-art icon inside Claude Code's native welcome 
 
 The PNG is converted into colored `▀` / `▄` text cells. This is a native text-rendered icon, not a Kitty PNG overlay or an extra startup splash.
 
-| Input PNG | Pixel preview · 28 columns × 11 rows |
+| Input PNG | Actual Claude startup icon · VS Code |
 | --- | --- |
-| <img src="examples/deepseek.png" width="260" alt="Input DeepSeek-inspired pixel character"> | <img src="docs/assets/pixel-preview.svg" width="280" alt="Quantized pixel preview with transparency"> |
+| <img src="examples/deepseek.png" width="260" alt="Input DeepSeek-inspired pixel character"> | <img src="docs/assets/claude-startup-icon.png" width="280" alt="Actual Claude Code startup icon captured in VS Code"> |
 
-The preview shows the converted pixels, not a terminal screenshot. The sample is AI-generated DeepSeek-inspired artwork; you can use your own PNG.
+The right image is cropped from the actual Claude Code startup screen in VS Code, retaining its terminal colors, background and proportions. The sample is AI-generated DeepSeek-inspired artwork; you can use your own PNG.
+
+The [raw RGB pixel grid](docs/assets/pixel-preview.svg) is a conversion diagnostic, not a screenshot of the installed result. Terminal color mapping, font metrics and background affect how the icon looks.
 
 ## Compatibility
 
