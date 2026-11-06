@@ -36,6 +36,7 @@ def build_to(source, image, output, width=28):
             raise ValueError(f"Required tool is missing: {tool}")
     data = source.read_bytes()
     expected = hashlib.sha256(data).hexdigest()
+    release = engine.version(data)
     stub, pixels = engine.art(image, width)
     blob = engine.build(data, stub)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -52,7 +53,7 @@ def build_to(source, image, output, width=28):
             check=True,
             timeout=20,
         )
-        if result.stdout.strip() != "2.1.318 (Claude Code)":
+        if result.stdout.strip() != f"{release} (Claude Code)":
             raise ValueError("Built executable failed the version check")
         if sha256(source) != expected:
             raise ValueError(
@@ -66,7 +67,7 @@ def build_to(source, image, output, width=28):
         "output_sha256": sha256(output),
         "width": pixels.width,
         "rows": pixels.height // 2,
-        "version": "2.1.318",
+        "version": release,
         "output": str(output),
     }
 

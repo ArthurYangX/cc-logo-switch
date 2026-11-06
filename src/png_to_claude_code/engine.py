@@ -1,12 +1,13 @@
-"""Version-specific native header adapter for Claude Code 2.1.318 (macOS arm64)."""
+"""Version-specific native header adapter for Claude Code 2.1.318/2.1.319 (macOS arm64)."""
 
-import base64, json, struct, subprocess, tempfile
+import base64, json, struct, subprocess, tempfile, re, plistlib
 from pathlib import Path
 from PIL import Image
 
 MARKER = b"DEEPSEEK_PIXEL_HEADER_V1"
 START = b"function ul(m){"
 END = b"function Yd(m)"
+ADAPTERS = {"2.1.318": (END, b"rt"), "2.1.319": (b"function Gd(m)", b"ot")}
 
 
 def cells(im):
@@ -116,14 +117,42 @@ def graph(data):
     return base, mo, ml, flags
 
 
+def version(data):
+    """Read the version from the unique source module containing the header."""
+    base, mo, ml, _ = graph(data)
+    if data.count(START) != 1:
+        raise ValueError("Header entry is missing or ambiguous")
+    start = data.index(START)
+    matches = []
+    for i in range(ml // 52):
+        v = struct.unpack_from("<12I4B", data, base + mo + 52 * i)
+        if v[2] + v[3] > mo:
+            raise ValueError("Invalid source module bounds")
+        if base + v[2] <= start < base + v[2] + v[3]:
+            chunk = data[base + v[2] : base + v[2] + v[3]]
+            match = re.search(rb"// Version: ([0-9.]+)\n", chunk[:250])
+            if match:
+                matches.append(match.group(1).decode("ascii"))
+    if len(matches) != 1 or matches[0] not in ADAPTERS:
+        raise ValueError(
+            "This adapter only supports inspected versions: " + ", ".join(ADAPTERS)
+        )
+    return matches[0]
+
+
 def build(data, stub):
     base, mo, ml, flags = graph(data)
     if MARKER in data:
         raise ValueError("Already patched; restore the saved backup before rebuilding")
-    if data.count(START) != 1 or data.count(END) != 1:
+    release = version(data)
+    end_marker, guard = ADAPTERS[release]
+    if end_marker not in data:
         raise ValueError("Header entry is missing or ambiguous")
     start = data.index(START)
-    end = data.index(END, start)
+    end = data.index(end_marker, start)
+    if b"=" + guard + b"()" not in data[start:end]:
+        raise ValueError("Unexpected header visibility guard")
+    stub = stub.replace(b"if(rt())", b"if(" + guard + b"())")
     if end - start > 5000 or b"fullscreen" not in data[start:end]:
         raise ValueError("Unexpected header implementation")
     if len(stub) > end - start:
@@ -142,8 +171,10 @@ def build(data, stub):
         raise ValueError("Header module is not uniquely identified")
     i, at, v = found[0]
     chunk = data[base + v[2] : base + v[2] + v[3]]
-    if b"// Version: 2.1.318\n" not in chunk[:250]:
-        raise ValueError("This adapter only supports 2.1.318")
+    if chunk.count(end_marker) != 1:
+        raise ValueError("Header boundary is ambiguous within its module")
+    if ("// Version: " + release + "\n").encode() not in chunk[:250]:
+        raise ValueError("Header version mismatch")
     result = bytearray(data)
     result[start:end] = stub.ljust(end - start, b" ")
     # Recompile only the changed source module; keep other modules cached.
@@ -158,6 +189,45 @@ def build(data, stub):
     return bytes(result)
 
 
+def embedded_entitlements(data):
+    """Read the XML entitlement slot when older codesign cannot export it."""
+    graph(data)  # validates the supported thin arm64 container
+    count = struct.unpack_from("<I", data, 16)[0]
+    offset = 32
+    for _ in range(count):
+        if offset + 8 > len(data):
+            raise ValueError("Truncated Mach-O load command")
+        command, size = struct.unpack_from("<II", data, offset)
+        if size < 8 or offset + size > len(data):
+            raise ValueError("Invalid Mach-O load command")
+        if command == 0x1D:  # LC_CODE_SIGNATURE
+            if size < 16:
+                raise ValueError("Invalid signature command")
+            start, length = struct.unpack_from("<II", data, offset + 8)
+            signature = data[start : start + length]
+            if len(signature) != length or length < 12:
+                raise ValueError("Truncated signature")
+            magic, total, slots = struct.unpack_from(">III", signature)
+            if magic != 0xFADE0CC0 or total > length or 12 + slots * 8 > total:
+                raise ValueError("Invalid signature superblob")
+            for i in range(slots):
+                kind, at = struct.unpack_from(">II", signature, 12 + i * 8)
+                if kind != 5:
+                    continue
+                if at + 8 > total:
+                    raise ValueError("Invalid entitlement offset")
+                magic, size = struct.unpack_from(">II", signature, at)
+                if magic != 0xFADE7171 or size < 8 or at + size > total:
+                    raise ValueError("Invalid XML entitlement slot")
+                blob = signature[at + 8 : at + size]
+                if not isinstance(plistlib.loads(blob), dict):
+                    raise ValueError("Invalid entitlement plist")
+                return blob
+            return None
+        offset += size
+    return None
+
+
 def sign(path, original):
     with tempfile.TemporaryDirectory() as td:
         ent = Path(td) / "entitlements.plist"
@@ -166,18 +236,15 @@ def sign(path, original):
             check=True,
             capture_output=True,
         )
-        subprocess.run(
-            [
-                "codesign",
-                "--force",
-                "--sign",
-                "-",
-                "--options",
-                "runtime",
-                "--entitlements",
-                str(ent),
-                str(path),
-            ],
-            check=True,
-        )
+        if not ent.exists() or not ent.stat().st_size:
+            blob = embedded_entitlements(Path(original).read_bytes())
+            if blob is not None:
+                ent.write_bytes(blob)
+        command = ["codesign", "--force", "--sign", "-", "--options", "runtime"]
+        if ent.exists() and ent.stat().st_size:
+            # Preserve the source XML entitlements, including JIT permissions.
+            plistlib.loads(ent.read_bytes())
+            command.extend(["--entitlements", str(ent)])
+        command.append(str(path))
+        subprocess.run(command, check=True)
         subprocess.run(["codesign", "--verify", str(path)], check=True)

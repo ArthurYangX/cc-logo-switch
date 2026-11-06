@@ -16,7 +16,7 @@
 
 ## 当前支持范围
 
-- **Claude Code 2.1.318 原生版，macOS Apple Silicon。**
+- **Claude Code 2.1.318 / 2.1.319 原生版，macOS Apple Silicon。**
 - Python 3.9+、Pillow、Node.js（检查注入代码语法）和 macOS `codesign`。
 - 已在 VS Code 1.144.1 的终端环境验证；彩色字符方案不要求图片协议。
 - 其他版本或不匹配的结构会被拒绝；Claude 自动更新可能覆盖补丁，没有自动重打补丁的钩子。
@@ -88,6 +88,6 @@ python -m pip install -e .
 python -m unittest discover -s tests -v
 ```
 
-测试覆盖透明像素、字符编码、补丁修改范围、不支持的架构和版本、备份恢复及并发改动检测。测试使用自建的可执行文件结构样本，不包含 Claude 程序本体。2.1.318 另经过本机真实交互验证，包括彩色显示、输入、窗口缩放和退出。
+测试覆盖透明像素、字符编码、补丁修改范围、不支持的架构和版本、备份恢复及并发改动检测。测试使用自建的可执行文件结构样本，不包含 Claude 程序本体。2.1.318、2.1.319 均经过本机真实交互验证，包括彩色显示、输入、窗口缩放和退出。
 
 MIT 许可；参考项目及许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。这是非官方定制工具，与 Anthropic、DeepSeek 无隶属关系。

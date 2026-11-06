@@ -48,7 +48,7 @@ def preview(image, width, svg=None):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Turn a PNG into a pixel-art Claude Code welcome icon (2.1.318, macOS arm64)."
+        description="Turn a PNG into a pixel-art Claude Code welcome icon (2.1.318 / 2.1.319, macOS arm64)."
     )
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)

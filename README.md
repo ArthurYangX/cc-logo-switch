@@ -18,7 +18,7 @@ The [raw RGB pixel grid](docs/assets/pixel-preview.svg) is a conversion diagnost
 
 | Item | Supported / tested |
 | --- | --- |
-| Claude Code | **2.1.318**, native macOS ARM64 installation |
+| Claude Code | **2.1.318 and 2.1.319**, native macOS ARM64 installation |
 | Build / install / restore | macOS Apple Silicon |
 | Preview | Python-supported platforms |
 | Python | 3.9+ |
@@ -101,7 +101,7 @@ python -m pip install -e .
 python -m unittest discover -s tests -v
 ```
 
-Tests use synthetic executable fixtures, not redistributed Claude binaries. They cover transparent cells, character encoding, patch boundaries, architecture/version rejection, installation, restoration and changed-file detection. The 2.1.318 implementation was additionally checked locally with a real interactive terminal: colored header, text input, window resizing and normal exit.
+Tests use synthetic executable fixtures, not redistributed Claude binaries. They cover transparent cells, character encoding, patch boundaries, architecture/version rejection, installation, restoration and changed-file detection. The 2.1.318 and 2.1.319 implementations were additionally checked locally with a real interactive terminal: colored header, text input, window resizing and normal exit.
 
 [Implementation notes](docs/how-it-works.md) explain the fixed-length patch and the Bun bytecode-cache invalidation needed for the changed module.
 
